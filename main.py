@@ -10,9 +10,9 @@ class GrooveUser(object):
 	   		  "%s/recent_favorite_songs.rss" % (self.user)
 		feed = feedparser.parse(url)
 		self.__tracks = list()
-		self.__tracks.append([self.__track(entry.title) \
-								for entry in feed.entries])
-		print self.tracks
+	 	for entry in feed.entries:
+			self.__tracks.append(self.__track(entry.title))
+
 
 	def __track(self, str):
 		a = str.split("-")
@@ -27,8 +27,23 @@ class GrooveUser(object):
 	tracks = property(get_tracks, set_tracks)
 
 
+class LastFm(object):
+	API_URL = "http://ws.audioscrobbler.com/2.0/"
+
+	def __init__(self, user, session_key):
+		self.user = user
+		self.session_key = session_key
+
+	def sign(self, params):
+		request = u''.join(["%s%s" % (key, params[key] \
+							for key in sorted(params)])
+		return md5("%s%s" % (request, self.secret)).hexdigest()
+
 def main():
 	gu = GrooveUser("testuser", "haha")
+	for entry in gu.tracks:
+		print entry
+
 
 if __name__ == "__main__":
 	main()
